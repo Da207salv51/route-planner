@@ -3,107 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scout Global Planner 2026</title>
+    <title>Scout Safe Route 2026</title>
     <style>
-        :root { --green: #1b5e20; --gold: #fbc02d; --light: #f1f8e9; }
-        body { font-family: -apple-system, sans-serif; background: #fafafa; margin: 0; padding: 10px; }
-        .app-container { max-width: 600px; margin: auto; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-        header { text-align: center; border-bottom: 2px solid var(--green); margin-bottom: 20px; padding-bottom: 10px; }
-        .countdown { background: #212121; color: var(--gold); padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; margin: 15px 0; }
-        .section { background: var(--light); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid #e0e0e0; }
-        label { font-weight: bold; color: var(--green); display: block; margin-bottom: 8px; }
-        input, select, button { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
-        button { background: var(--green); color: white; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; }
-        .dossier { background: #fff; border-left: 6px solid var(--green); padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 0.9em; line-height: 1.6; }
-        .checklist-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        :root { --scout-green: #1b5e20; --gold: #fbc02d; --bg: #f4f7f6; --danger: #d32f2f; --warning: #ff9800; --success: #2e7d32; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
+        .app-card { max-width: 600px; margin: auto; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        header { text-align: center; border-bottom: 3px solid var(--scout-green); padding-bottom: 15px; margin-bottom: 20px; }
+        .clock { font-size: 0.9em; color: #666; font-weight: bold; }
+        .countdown { background: #212121; color: var(--gold); padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; margin: 15px 0; border: 2px solid var(--gold); }
+        .section { background: #fff; border: 1px solid #e0e0e0; border-radius: 18px; padding: 15px; margin-bottom: 15px; }
+        label { font-weight: bold; color: var(--scout-green); display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 0.8em; }
+        input, select, button { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; outline: none; }
+        button { background: var(--scout-green); color: white; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
+        
+        /* Alert Dogana e Sicurezza */
+        .status-box { padding: 15px; border-radius: 12px; margin-top: 10px; font-weight: bold; text-align: center; border: 2px solid; }
+        .danger { background: #ffebee; color: var(--danger); border-color: var(--danger); }
+        .safe { background: #e8f5e9; color: var(--success); border-color: var(--success); }
+        .warn { background: #fff3e0; color: var(--warning); border-color: var(--warning); }
+
+        /* Checklist con "Stiratura" */
+        .checklist-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .checklist-item input { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--scout-green); }
+        .checked-item span { text-decoration: line-through; color: #aaa; font-style: italic; }
+        
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-card">
     <header>
-        <div id="clock" style="font-size: 0.8em; color: #666;"></div>
-        <h1 style="margin:5px 0; color: var(--green);">⚜️ Global Planner</h1>
+        <div id="liveClock" class="clock"></div>
+        <h1 style="margin:5px 0; color: var(--scout-green);">⚜️ Safe Route 2026</h1>
     </header>
 
     <div class="section">
-        <label>Data di Partenza:</label>
-        <input type="date" id="dataP" onchange="checkSeason()">
-        <div id="timer" class="countdown">Scegli una data</div>
+        <label>Partenza Route:</label>
+        <input type="date" id="dateInput" onchange="initApp()">
+        <div id="countdownBox" class="countdown">Scegli la data</div>
     </div>
 
-    <div id="globalMenu" class="hidden">
+    <div id="stepNazione" class="hidden">
         <div class="section">
-            <label>Cerca Nazione (Mondo Intero):</label>
-            <input type="text" id="searchCountry" placeholder="Es: Francia, Kenya, Perù..." oninput="filterCountries()">
-            <select id="countrySelect" size="5" style="margin-top:5px;" onchange="updateDossier()"></select>
+            <label>Nazione di Destinazione:</label>
+            <input type="text" id="searchBox" placeholder="Cerca nazione..." onkeyup="searchCountry()">
+            <select id="countrySelect" size="5" style="margin-top:10px;"></select>
         </div>
+        <button onclick="buildRoute()">VERIFICA DOGANE E ZAINO</button>
     </div>
-
-    <button onclick="generatePlan()">GENERA PIANO ROUTE</button>
 
     <div id="results" class="hidden">
-        <div id="dossierBox" class="dossier"></div>
-        <h3>📝 Zaino 70L Consigliato:</h3>
-        <div id="itemList"></div>
+        <div id="statusAlert" class="status-box"></div>
+        <div id="dossierContent" style="padding: 15px; line-height: 1.6;"></div>
+        <h3>📝 Zaino 70L (Tocca per segnare)</h3>
+        <div id="checklistContainer"></div>
     </div>
 </div>
 
 <script>
-    // Database semplificato per 195 nazioni (Logica automatizzata)
-    const countries = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua e Barbuda", "Arabia Saudita", "Argentina", "Armenia", "Australia", "Austria", "Azerbaigian", "Bahamas", "Bahrein", "Bangladesh", "Barbados", "Belgio", "Belize", "Benin", "Bhutan", "Bielorussia", "Birmania", "Bolivia", "Bosnia ed Erzegovina", "Botswana", "Brasile", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambogia", "Camerun", "Canada", "Capo Verde", "Ciad", "Cile", "Cina", "Cipro", "Città del Vaticano", "Colombia", "Comore", "Corea del Nord", "Corea del Sud", "Costa d'Avorio", "Costa Rica", "Croazia", "Cuba", "Danimarca", "Dominica", "Ecuador", "Egitto", "El Salvador", "Emirati Arabi Uniti", "Eritrea", "Estonia", "Etiopia", "Figi", "Filippine", "Finlandia", "Francia", "Gabon", "Gambia", "Georgia", "Germania", "Ghana", "Giamaica", "Giappone", "Gibuti", "Giordania", "Grecia", "Grenada", "Guatemala", "Guinea", "Guinea Equatoriale", "Guinea-Bissau", "Guyana", "Haiti", "Honduras", "India", "Indonesia", "Iran", "Iraq", "Irlanda", "Islanda", "Isole Marshall", "Isole Salomone", "Israele", "Italia", "Kazakistan", "Kenya", "Kirghizistan", "Kiribati", "Kuwait", "Laos", "Lesotho", "Lettonia", "Libano", "Liberia", "Libia", "Liechtenstein", "Lituania", "Lussemburgo", "Macedonia del Nord", "Madagascar", "Malawi", "Malesia", "Maldive", "Mali", "Malta", "Marocco", "Mauritania", "Mauritius", "Messico", "Micronesia", "Moldavia", "Principato di Monaco", "Mongolia", "Montenegro", "Mozambico", "Namibia", "Nauru", "Nepal", "Nicaragua", "Niger", "Nigeria", "Norvegia", "Nuova Zelanda", "Oman", "Paesi Bassi", "Pakistan", "Palau", "Palestina", "Panama", "Papua Nuova Guinea", "Paraguay", "Perù", "Polonia", "Portogallo", "Qatar", "Regno Unito", "Repubblica Ceca", "Repubblica Centrafricana", "Repubblica del Congo", "Repubblica Democratica del Congo", "Repubblica Dominicana", "Romania", "Ruanda", "Russia", "Saint Kitts e Nevis", "Saint Lucia", "Saint Vincent e Grenadine", "Samoa", "San Marino", "Sao Tomé e Principe", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Siria", "Slovacchia", "Slovenia", "Somalia", "Spagna", "Sri Lanka", "Stati Uniti", "Sudafrica", "Sudan", "Sudan del Sud", "Suriname", "Svezia", "Svizzera", "Swaziland", "Tagikistan", "Taiwan", "Tanzania", "Thailandia", "Timor Est", "Togo", "Tonga", "Trinidad e Tobago", "Tunisia", "Turchia", "Turkmenistan", "Tuvalu", "Ucraina", "Uganda", "Ungheria", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"];
+    // Database Sicurezza 2026
+    const securityDB = {
+        "Ucraina": { status: "danger", info: "DOGANA CHIUSA - Zona di guerra attiva. Accesso vietato.", p: true },
+        "Russia": { status: "danger", info: "DOGANA BLOCCATA - Sanzioni internazionali e visti sospesi.", p: true },
+        "Kenya": { status: "warn", info: "APERTA CON CAUTELA - Serve eVisa. Evitare zone di confine.", p: true },
+        "Israele": { status: "warn", info: "APERTA CON CONTROLLI - Situazione instabile. Possibili blocchi improvvisi.", p: true },
+        "Palestina": { status: "danger", info: "CHIUSA/RISCHIOSA - Sconsigliato l'ingresso per motivi scout.", p: true },
+        "Giappone": { status: "safe", info: "APERTA - Ingresso libero con passaporto.", p: true },
+        "USA": { status: "safe", info: "APERTA - Serve passaporto + ESTA.", p: true },
+        "Francia": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false },
+        "Spagna": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false },
+        "Germania": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false }
+    };
 
-    function updateClock() {
-        const d = new Date();
-        document.getElementById('clock').innerText = d.toLocaleString('it-IT');
+    const continents = {
+        "Europa": ["Albania", "Austria", "Belgio", "Croazia", "Danimarca", "Francia", "Germania", "Grecia", "Italia", "Norvegia", "Polonia", "Portogallo", "Regno Unito", "Repubblica Ceca", "Spagna", "Svezia", "Svizzera", "Ucraina"],
+        "Extra-Europa": ["Afghanistan", "Argentina", "Australia", "Brasile", "Canada", "Cina", "Egitto", "Giappone", "India", "Israele", "Kenya", "Marocco", "Messico", "Palestina", "Russia", "Stati Uniti", "Sudafrica", "Turchia"]
+    };
+
+    function updateTime() {
+        document.getElementById('liveClock').innerText = new Date().toLocaleString('it-IT');
     }
-    setInterval(updateClock, 1000);
+    setInterval(updateTime, 1000);
 
-    function filterCountries() {
-        const input = document.getElementById('searchCountry').value.toLowerCase();
-        const select = document.getElementById('countrySelect');
-        select.innerHTML = '';
-        countries.filter(c => c.toLowerCase().includes(input)).forEach(c => {
-            let opt = document.createElement('option');
-            opt.value = c;
-            opt.innerHTML = c;
-            select.appendChild(opt);
-        });
+    function initApp() {
+        const p = new Date(document.getElementById('dateInput').value);
+        const diff = Math.ceil((p - new Date()) / 86400000);
+        document.getElementById('countdownBox').innerText = diff > 0 ? `MANCANO ${diff} GIORNI!` : "BUONA STRADA!";
+        document.getElementById('stepNazione').classList.remove('hidden');
+        searchCountry();
     }
 
-    function checkSeason() {
-        const dp = new Date(document.getElementById('dataP').value);
-        const diff = Math.ceil((dp - new Date()) / 86400000);
-        document.getElementById('timer').innerText = diff > 0 ? `Mancano ${diff} giorni!` : "In cammino!";
-        document.getElementById('globalMenu').classList.remove('hidden');
-        filterCountries();
+    function searchCountry() {
+        const query = document.getElementById('searchBox').value.toLowerCase();
+        const sel = document.getElementById('countrySelect');
+        sel.innerHTML = '';
+        for (const [area, nazioni] of Object.entries(continents)) {
+            nazioni.filter(n => n.toLowerCase().includes(query)).forEach(n => {
+                let opt = document.createElement('option');
+                opt.value = n;
+                opt.dataset.area = area;
+                opt.innerText = `${n} (${area})`;
+                sel.appendChild(opt);
+            });
+        }
     }
 
-    function generatePlan() {
-        const country = document.getElementById('countrySelect').value || "Italia";
-        const results = document.getElementById('results');
-        const dossier = document.getElementById('dossierBox');
-        const list = document.getElementById('itemList');
+    function buildRoute() {
+        const sel = document.getElementById('countrySelect');
+        if(!sel.value) return alert("Scegli una nazione!");
         
-        results.classList.remove('hidden');
+        const nazione = sel.value;
+        const area = sel.options[sel.selectedIndex].dataset.area;
+        const alertBox = document.getElementById('statusAlert');
+        const doss = document.getElementById('dossierContent');
+        document.getElementById('results').classList.remove('hidden');
+
+        // Logica Sicurezza & Dogana
+        let security = securityDB[nazione] || { status: "safe", info: "APERTA - Nessuna segnalazione critica.", p: (area === "Extra-Europa") };
         
-        // Logica automatizzata per documenti/prese basata su liste UE/Extra
-        const eu = ["Italia", "Francia", "Spagna", "Germania", "Grecia", "Portogallo", "Austria", "Belgio"]; // etc.
-        const isEu = eu.includes(country);
-        
-        dossier.innerHTML = `
-            <strong>Dossier ${country}</strong><br>
-            🆔 Documenti: ${isEu ? 'Carta Identità' : 'Passaporto + Verifica Visto'}<br>
-            🔌 Presa: ${isEu ? 'Tipo C/F/L' : 'Verificare Adattatore Universale'}<br>
-            💉 Sanità: ${isEu ? 'Tessera Sanitaria UE' : 'Assicurazione + Vaccini Consigliati'}<br>
-            📱 Rete: ${isEu ? 'Roaming Incluso' : 'Consigliata e-SIM locale'}
+        alertBox.className = `status-box ${security.status === 'danger' ? 'danger' : (security.status === 'warn' ? 'warn' : 'safe')}`;
+        alertBox.innerHTML = `🛡️ STATO DOGANA: ${security.info}`;
+
+        const pStatus = security.p ? "⚠️ SERVE IL PASSAPORTO" : "✅ BASTA CARTA D'IDENTITÀ";
+        const pColor = security.p ? "var(--danger)" : "var(--success)";
+
+        doss.innerHTML = `
+            <h2 style="margin:0;">📍 ${nazione}</h2>
+            <p style="color:${pColor}; font-weight:bold; border: 1px solid; padding: 5px; border-radius: 5px; text-align:center;">${pStatus}</p>
+            <p>🔌 <b>Prese:</b> ${area === 'Extra-Europa' ? 'Adattatore Universale' : 'Standard UE'}<br>
+            📱 <b>Dati:</b> ${area === 'Extra-Europa' ? 'SIM Locale / e-SIM' : 'Roaming incluso'}</p>
         `;
 
-        const items = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Borraccia 1.5L", "Scarponi", "Kit Medico"];
-        list.innerHTML = items.map(i => `<div class="checklist-item">🔘 ${i}</div>`).join('');
+        const zaino = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Borraccia", "Scarponi", "Kit Medico", "Poncho"];
+        if(security.p) zaino.push("Passaporto", "Copia Documenti");
+        if(security.status === 'warn') zaino.push("Localizzatore GPS", "Numeri Emergenza Consolari");
+
+        document.getElementById('checklistContainer').innerHTML = zaino.map((item, i) => `
+            <div class="checklist-item" onclick="toggleItem(this)">
+                <input type="checkbox" id="i-${i}">
+                <span>${item}</span>
+            </div>
+        `).join('');
+    }
+
+    function toggleItem(el) {
+        const cb = el.querySelector('input');
+        cb.checked = !cb.checked;
+        el.classList.toggle('checked-item', cb.checked);
     }
 </script>
 </body>
 </html>
-
