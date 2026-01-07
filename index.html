@@ -3,178 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scout Master Planner 2026</title>
+    <title>Clan Robinson - Imperia 1</title>
     <style>
-        :root { --green: #1b5e20; --gold: #fbc02d; --bg: #f0f2f5; --danger: #d32f2f; --info: #0288d1; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
-        .container { max-width: 600px; margin: auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        header { text-align: center; border-bottom: 2px solid var(--green); padding-bottom: 10px; margin-bottom: 15px; }
-        .live-info { font-size: 0.85em; font-weight: bold; color: #555; display: flex; justify-content: space-between; padding: 5px 10px; background: #eee; border-radius: 10px; }
-        .countdown { background: #222; color: var(--gold); padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin: 10px 0; border: 1px solid var(--gold); }
-        .section { background: #fff; border: 1px solid #ddd; border-radius: 15px; padding: 12px; margin-bottom: 10px; }
-        label { font-weight: bold; color: var(--green); display: block; margin-bottom: 5px; font-size: 0.8em; text-transform: uppercase; }
-        input, select, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 15px; margin-top: 5px; }
-        button { background: var(--green); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .weather-card { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; padding: 15px; border-radius: 15px; text-align: center; margin: 10px 0; }
-        .checklist-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .checked-item span { text-decoration: line-through; color: #bbb; }
+        :root { --green: #1b5e20; --bg: #f4f7f6; --red: #d32f2f; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; justify-content: center; }
+        .app-container { width: 100%; max-width: 500px; min-height: 100vh; background: white; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        
+        /* Livello 1: Benvenuto */
+        #screen-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; position: absolute; inset: 0; }
+        #screen-welcome img { width: 250px; height: auto; margin-bottom: 20px; }
+        #screen-welcome h1 { color: var(--green); font-size: 1.8em; margin-bottom: 30px; }
+        
+        /* Livello 2: Planner */
+        #screen-planner { display: none; padding: 20px; }
+        
+        .card { background: white; border: 1px solid #ddd; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .info-top { display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 10px; }
+        
+        label { display: block; font-weight: bold; color: var(--green); margin: 15px 0 5px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+        
+        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-next { background: var(--green); color: white; }
+        .btn-gen { background: #0288d1; color: white; margin-top: 10px; }
+
+        /* Scritta Grossa Route Invernale */
+        #winter-header { display: none; text-align: center; color: var(--red); font-size: 2.2em; font-weight: 900; margin: 20px 0; border: 4px solid var(--red); padding: 10px; border-radius: 10px; }
+        #route-summary { text-align: center; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; }
+
         .hidden { display: none; }
-        .tag { font-size: 0.7em; padding: 3px 7px; border-radius: 5px; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="live-info">
-            <span id="liveClock"></span>
-            <span id="liveDate"></span>
-        </div>
-        <h1 style="margin:10px 0; color: var(--green);">⚜️ Scout Planner 2026</h1>
-    </header>
-
-    <div class="section">
-        <label>Inizio Route:</label>
-        <input type="date" id="dateInput" onchange="initApp()">
-        <div id="countdown" class="countdown">Scegli la data</div>
+<div class="app-container">
+    
+    <div id="screen-welcome">
+        <img src="https://i.ibb.co/Ldx90vR/logo-agesci.png" alt="Imperia 1"> 
+        <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
+        <button class="btn-next" onclick="goNext()">AVANTI</button>
     </div>
 
-    <div id="mainStep" class="hidden">
-        <div class="section">
-            <label>Nazione:</label>
-            <select id="countrySelect" onchange="checkSubLocation()">
-                <option value="">-- Seleziona --</option>
-                <optgroup label="Europa">
-                    <option value="Italia">Italia 🇮🇹</option>
-                    <option value="Francia">Francia 🇫🇷</option>
-                    <option value="Spagna">Spagna 🇪🇸</option>
-                    <option value="Grecia">Grecia 🇬🇷</option>
-                </optgroup>
-                <optgroup label="Mondo">
-                    <option value="Kenya">Kenya 🇰🇪</option>
-                    <option value="Giappone">Giappone 🇯🇵</option>
-                    <option value="USA">Stati Uniti 🇺🇸</option>
-                    <option value="Brasile">Brasile 🇧🇷</option>
-                </optgroup>
-            </select>
+    <div id="screen-planner">
+        <div class="info-top">
+            <span id="live-clock"></span>
+            <span id="live-date"></span>
         </div>
 
-        <div id="italiaSect" class="section hidden">
-            <label>Regione Italiana:</label>
-            <select id="regioneSelect" onchange="popolaProvince()">
-                <option value="">-- Regione --</option>
+        <div class="card">
+            <label>Data Inizio:</label>
+            <input type="date" id="start-date">
+            
+            <label>Data Fine:</label>
+            <input type="date" id="end-date">
+
+            <label>Destinazione (Europa):</label>
+            <select id="country">
+                <option value="Italia">Italia 🇮🇹</option>
+                <option value="Francia">Francia 🇫🇷</option>
+                <option value="Spagna">Spagna 🇪🇸</option>
+                <option value="Germania">Germania 🇩🇪</option>
+                <option value="Svizzera">Svizzera 🇨🇭</option>
+                <option value="Austria">Austria 🇦🇹</option>
             </select>
-            <label style="margin-top:10px;">Provincia:</label>
-            <select id="provinciaSelect">
-                <option value="">-- Provincia --</option>
-            </select>
+
+            <button class="btn-gen" onclick="processRoute()">GENERA REPORT</button>
         </div>
 
-        <button onclick="calcolaTutto()">GENERA REPORT COMPLETO</button>
+        <div id="winter-header">ROUTE INVERNALE</div>
+        <div id="route-summary"></div>
     </div>
 
-    <div id="results" class="hidden">
-        <div id="weatherBox" class="weather-card"></div>
-        
-        <div class="section" style="border-left: 5px solid var(--info);">
-            <h4 style="margin:0;">🛰️ LOGISTICA & DOGANA</h4>
-            <div id="logisticsInfo" style="font-size:0.9em; margin-top:5px;"></div>
-            <button id="flightLink" style="background:var(--info); font-size:0.8em;" onclick="openSkyscanner()">✈️ VEDI COSTI VOLI</button>
-        </div>
-
-        <h3>📝 Zaino 70L</h3>
-        <div id="checklist"></div>
-    </div>
 </div>
 
 <script>
-    const regProv = {
-        "Lombardia": ["Milano", "Bergamo", "Brescia", "Como"],
-        "Lazio": ["Roma", "Viterbo", "Rieti", "Latina"],
-        "Toscana": ["Firenze", "Siena", "Pisa", "Arezzo"],
-        "Puglia": ["Bari", "Lecce", "Foggia", "Taranto"]
-    };
-
-    const nazioniData = {
-        "Italia": { dist: "Nazionale", vax: "Nessuno", pass: false, travel: "Treno/Bus", dogana: "Aperta" },
-        "Kenya": { dist: "Oltreoceano", vax: "Febbre Gialla, Malaria", pass: true, travel: "Aereo", dogana: "Aperta con visto" },
-        "Giappone": { dist: "Lontana", vax: "Nessuno", pass: true, travel: "Aereo", dogana: "Aperta" },
-        "Francia": { dist: "Vicina", vax: "Nessuno", pass: false, travel: "Treno/Bus", dogana: "Aperta" }
-    };
-
-    function updateClock() {
-        const d = new Date();
-        document.getElementById('liveClock').innerText = d.toLocaleTimeString('it-IT');
-        document.getElementById('liveDate').innerText = d.toLocaleDateString('it-IT');
+    // Aggiorna Orologio Live
+    function updateTime() {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString('it-IT');
+        document.getElementById('live-date').innerText = now.toLocaleDateString('it-IT');
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+    setInterval(updateTime, 1000);
+    updateTime();
 
-    function initApp() {
-        const d = new Date(document.getElementById('dateInput').value);
-        const diff = Math.ceil((d - new Date()) / 86400000);
-        document.getElementById('countdown').innerText = diff > 0 ? `MANCANO ${diff} GIORNI!` : "BUONA STRADA!";
-        document.getElementById('mainStep').classList.remove('hidden');
-        
-        const reg = document.getElementById('regioneSelect');
-        reg.innerHTML = '<option value="">-- Regione --</option>';
-        Object.keys(regProv).forEach(r => reg.add(new Option(r, r)));
+    // Passaggio al livello successivo
+    function goNext() {
+        document.getElementById('screen-welcome').style.display = 'none';
+        document.getElementById('screen-planner').style.display = 'block';
     }
 
-    function checkSubLocation() {
-        const c = document.getElementById('countrySelect').value;
-        document.getElementById('italiaSect').className = (c === "Italia") ? "section" : "hidden";
-    }
+    // Logica Route
+    function processRoute() {
+        const start = new Date(document.getElementById('start-date').value);
+        const end = new Date(document.getElementById('end-date').value);
+        const country = document.getElementById('country').value;
 
-    function popolaProvince() {
-        const r = document.getElementById('regioneSelect').value;
-        const p = document.getElementById('provinciaSelect');
-        p.innerHTML = '<option value="">-- Provincia --</option>';
-        if(r) regProv[r].forEach(prov => p.add(new Option(prov, prov)));
-    }
+        if (isNaN(start) || isNaN(end)) {
+            alert("Per favore, inserisci le date.");
+            return;
+        }
 
-    function calcolaTutto() {
-        const c = document.getElementById('countrySelect').value;
-        if(!c) return alert("Seleziona nazione!");
-        
-        document.getElementById('results').classList.remove('hidden');
-        const data = nazioniData[c] || nazioniData["Francia"];
-        
-        // Meteo Simulato basato su nazione (posizione segnata)
-        let temp = c === "Kenya" ? "28°C" : (c === "Italia" ? "18°C" : "12°C");
-        let cond = c === "Kenya" ? "☀️ Sole Tropico" : "⛅ Variabile";
-        document.getElementById('weatherBox').innerHTML = `<h3>${cond} | ${temp}</h3><p>Meteo locale previsto per la destinazione</p>`;
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-        document.getElementById('logisticsInfo').innerHTML = `
-            📍 <b>Posizione:</b> ${c} ${c === 'Italia' ? '('+document.getElementById('provinciaSelect').value+')' : ''}<br>
-            🛂 <b>Passaporto:</b> ${data.pass ? "⚠️ SERVE PASSAPORTO" : "✅ NON SERVE (Basta C.I.)"}<br>
-            🛡️ <b>Dogana:</b> ${data.dogana}<br>
-            💉 <b>Vaccini:</b> ${data.vax}
-        `;
+        const winterHeader = document.getElementById('winter-header');
+        const summary = document.getElementById('route-summary');
 
-        document.getElementById('flightLink').style.display = data.travel === "Aereo" ? "block" : "none";
-
-        const zaino = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Scarponi", "Kit Medico", "Poncho"];
-        if(data.pass) zaino.push("Passaporto", "Assicurazione");
-        
-        document.getElementById('checklist').innerHTML = zaino.map((item, i) => `
-            <div class="checklist-item" onclick="toggleItem(this)">
-                <input type="checkbox" id="i-${i}">
-                <span>${item}</span>
-            </div>
-        `).join('');
-    }
-
-    function toggleItem(el) {
-        const cb = el.querySelector('input');
-        cb.checked = !cb.checked;
-        el.classList.toggle('checked-item', cb.checked);
-    }
-
-    function openSkyscanner() {
-        const c = document.getElementById('countrySelect').value;
-        window.open(`https://www.skyscanner.it/trasporti/voli-da/it/${c.toLowerCase()}/`, '_blank');
+        // Se la route dura 3 giorni (o meno), mostra la scritta grossa
+        if (diffDays <= 3) {
+            winterHeader.style.display = 'block';
+            summary.innerText = `Route di ${diffDays} giorni in ${country}`;
+        } else {
+            winterHeader.style.display = 'none';
+            summary.innerText = `Route estiva di ${diffDays} giorni in ${country}`;
+        }
     }
 </script>
+
 </body>
 </html>
+
