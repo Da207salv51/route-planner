@@ -3,46 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clan Robinson</title>
+    <title>Clan Robinson - Preparatore di Route</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #f8f9fa;
+            padding-top: 50px;
         }
-        .container {
+        .main-container {
             text-align: center;
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 450px;
         }
-        img {
-            max-width: 300px;
+        .logo-box {
+            border: 3px solid #2c3e50;
+            border-radius: 25px;
+            padding: 20px;
+            background-color: white;
+            margin-bottom: 40px;
+            display: inline-block;
+        }
+        .logo-img {
+            max-width: 250px;
             height: auto;
-            border-radius: 10px;
-            margin-bottom: 20px;
+            display: block;
+            margin: 0 auto;
+        }
+        .group-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4b3d8e; /* Colore simile al viola Imperia 1 */
+            margin-top: 15px;
+            text-transform: uppercase;
         }
         h1 {
-            font-size: 2.5rem;
+            color: #2c3e50;
+            font-size: 32px;
+            line-height: 1.2;
             margin: 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+            font-weight: 800;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <img src="66543de8-3ef1-42c3-8552-d1ad7f06badd.jpeg" alt="Logo Clan Robinson">
-        
-        <h1>Clan Robinson</h1>
+    <div class="main-container">
+        <div class="logo-box">
+            <img src="66543de8-3ef1-42c3-8552-d1ad7f06badd.jpeg" alt="AGESCI Logo" class="logo-img">
+            <div class="group-name">IMPERIA 1</div>
+        </div>
+
+        <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
     </div>
 
 </body>
