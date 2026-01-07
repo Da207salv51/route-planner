@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scout Safe Route 2026</title>
+    <title>Scout Travel Hub 2026</title>
     <style>
-        :root { --scout-green: #1b5e20; --gold: #fbc02d; --bg: #f4f7f6; --danger: #d32f2f; --warning: #ff9800; --success: #2e7d32; }
+        :root { --scout-green: #1b5e20; --gold: #fbc02d; --bg: #f4f7f6; --danger: #d32f2f; --info: #0288d1; --success: #2e7d32; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
         .app-card { max-width: 600px; margin: auto; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         header { text-align: center; border-bottom: 3px solid var(--scout-green); padding-bottom: 15px; margin-bottom: 20px; }
@@ -15,18 +15,15 @@
         label { font-weight: bold; color: var(--scout-green); display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 0.8em; }
         input, select, button { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; outline: none; }
         button { background: var(--scout-green); color: white; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
+        .btn-flight { background: var(--info); margin-top: 5px; }
         
-        /* Alert Dogana e Sicurezza */
-        .status-box { padding: 15px; border-radius: 12px; margin-top: 10px; font-weight: bold; text-align: center; border: 2px solid; }
+        .status-box { padding: 12px; border-radius: 12px; margin-top: 10px; font-weight: bold; font-size: 0.9em; border: 2px solid; }
         .danger { background: #ffebee; color: var(--danger); border-color: var(--danger); }
         .safe { background: #e8f5e9; color: var(--success); border-color: var(--success); }
-        .warn { background: #fff3e0; color: var(--warning); border-color: var(--warning); }
-
-        /* Checklist con "Stiratura" */
-        .checklist-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .checklist-item input { width: 22px; height: 22px; margin-right: 15px; accent-color: var(--scout-green); }
-        .checked-item span { text-decoration: line-through; color: #aaa; font-style: italic; }
         
+        .logistics-card { background: #f1f8e9; border: 1px dashed var(--scout-green); padding: 15px; border-radius: 12px; margin-top: 10px; }
+        .checklist-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .checked-item span { text-decoration: line-through; color: #aaa; font-style: italic; }
         .hidden { display: none; }
     </style>
 </head>
@@ -35,11 +32,11 @@
 <div class="app-card">
     <header>
         <div id="liveClock" class="clock"></div>
-        <h1 style="margin:5px 0; color: var(--scout-green);">⚜️ Safe Route 2026</h1>
+        <h1 style="margin:5px 0; color: var(--scout-green);">⚜️ Scout Travel Hub</h1>
     </header>
 
     <div class="section">
-        <label>Partenza Route:</label>
+        <label>Partenza Route 2026:</label>
         <input type="date" id="dateInput" onchange="initApp()">
         <div id="countdownBox" class="countdown">Scegli la data</div>
     </div>
@@ -50,36 +47,44 @@
             <input type="text" id="searchBox" placeholder="Cerca nazione..." onkeyup="searchCountry()">
             <select id="countrySelect" size="5" style="margin-top:10px;"></select>
         </div>
-        <button onclick="buildRoute()">VERIFICA DOGANE E ZAINO</button>
+        <button onclick="buildRoute()">VERIFICA VIAGGIO E ZAINO</button>
     </div>
 
     <div id="results" class="hidden">
         <div id="statusAlert" class="status-box"></div>
-        <div id="dossierContent" style="padding: 15px; line-height: 1.6;"></div>
+        
+        <div class="logistics-card">
+            <h4 style="margin:0 0 10px 0; color: var(--scout-green);">🛰️ LOGISTICA E TRASPORTI</h4>
+            <div id="logisticsInfo"></div>
+            <button id="flightBtn" class="btn-flight" onclick="openFlights()">✈️ CERCA VOLI E COSTI</button>
+        </div>
+
+        <div id="healthInfo" class="section" style="margin-top:15px; border-left: 5px solid #ff5722;"></div>
+
         <h3>📝 Zaino 70L (Tocca per segnare)</h3>
         <div id="checklistContainer"></div>
     </div>
 </div>
 
 <script>
-    // Database Sicurezza 2026
-    const securityDB = {
-        "Ucraina": { status: "danger", info: "DOGANA CHIUSA - Zona di guerra attiva. Accesso vietato.", p: true },
-        "Russia": { status: "danger", info: "DOGANA BLOCCATA - Sanzioni internazionali e visti sospesi.", p: true },
-        "Kenya": { status: "warn", info: "APERTA CON CAUTELA - Serve eVisa. Evitare zone di confine.", p: true },
-        "Israele": { status: "warn", info: "APERTA CON CONTROLLI - Situazione instabile. Possibili blocchi improvvisi.", p: true },
-        "Palestina": { status: "danger", info: "CHIUSA/RISCHIOSA - Sconsigliato l'ingresso per motivi scout.", p: true },
-        "Giappone": { status: "safe", info: "APERTA - Ingresso libero con passaporto.", p: true },
-        "USA": { status: "safe", info: "APERTA - Serve passaporto + ESTA.", p: true },
-        "Francia": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false },
-        "Spagna": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false },
-        "Germania": { status: "safe", info: "APERTA - Libera circolazione UE.", p: false }
+    const database = {
+        "Kenya": { vax: "Febbre Gialla (Obbligatoria), Malaria (Consigliata)", travel: "Aereo", dist: "Oltreoceano", security: "Safe/Warn", pass: true },
+        "Giappone": { vax: "Nessuno obbligatorio", travel: "Aereo", dist: "Lontana", security: "Safe", pass: true },
+        "USA": { vax: "Nessuno obbligatorio", travel: "Aereo", dist: "Oltreoceano", security: "Safe", pass: true },
+        "Brasile": { vax: "Febbre Gialla, Epatite A", travel: "Aereo", dist: "Oltreoceano", security: "Warn", pass: true },
+        "Spagna": { vax: "Nessuno", travel: "Nave / Bus / Treno", dist: "Vicina", security: "Safe", pass: false },
+        "Grecia": { vax: "Nessuno", travel: "Nave / Aereo", dist: "Vicina", security: "Safe", pass: false },
+        "Islanda": { vax: "Nessuno", travel: "Aereo", dist: "Media", security: "Safe", pass: false },
+        "Marocco": { vax: "Epatite A, Tifo (Consigliati)", travel: "Nave / Aereo", dist: "Media", security: "Safe", pass: true },
+        "Ucraina": { vax: "N/A", travel: "Bloccato", dist: "Est Europa", security: "Danger", pass: true }
     };
 
     const continents = {
-        "Europa": ["Albania", "Austria", "Belgio", "Croazia", "Danimarca", "Francia", "Germania", "Grecia", "Italia", "Norvegia", "Polonia", "Portogallo", "Regno Unito", "Repubblica Ceca", "Spagna", "Svezia", "Svizzera", "Ucraina"],
-        "Extra-Europa": ["Afghanistan", "Argentina", "Australia", "Brasile", "Canada", "Cina", "Egitto", "Giappone", "India", "Israele", "Kenya", "Marocco", "Messico", "Palestina", "Russia", "Stati Uniti", "Sudafrica", "Turchia"]
+        "Europa": ["Albania", "Austria", "Belgio", "Croazia", "Francia", "Germania", "Grecia", "Islanda", "Italia", "Norvegia", "Polonia", "Portogallo", "Regno Unito", "Spagna", "Svezia", "Svizzera", "Ucraina"],
+        "Extra-Europa": ["Argentina", "Australia", "Brasile", "Canada", "Cina", "Egitto", "Giappone", "India", "Israele", "Kenya", "Marocco", "Messico", "Stati Uniti", "Sudafrica", "Tailandia", "Turchia"]
     };
+
+    let selectedCountry = "";
 
     function updateTime() {
         document.getElementById('liveClock').innerText = new Date().toLocaleString('it-IT');
@@ -113,31 +118,35 @@
         const sel = document.getElementById('countrySelect');
         if(!sel.value) return alert("Scegli una nazione!");
         
-        const nazione = sel.value;
+        selectedCountry = sel.value;
         const area = sel.options[sel.selectedIndex].dataset.area;
-        const alertBox = document.getElementById('statusAlert');
-        const doss = document.getElementById('dossierContent');
-        document.getElementById('results').classList.remove('hidden');
-
-        // Logica Sicurezza & Dogana
-        let security = securityDB[nazione] || { status: "safe", info: "APERTA - Nessuna segnalazione critica.", p: (area === "Extra-Europa") };
+        const res = document.getElementById('results');
+        const logistics = document.getElementById('logisticsInfo');
+        const health = document.getElementById('healthInfo');
         
-        alertBox.className = `status-box ${security.status === 'danger' ? 'danger' : (security.status === 'warn' ? 'warn' : 'safe')}`;
-        alertBox.innerHTML = `🛡️ STATO DOGANA: ${security.info}`;
+        res.classList.remove('hidden');
 
-        const pStatus = security.p ? "⚠️ SERVE IL PASSAPORTO" : "✅ BASTA CARTA D'IDENTITÀ";
-        const pColor = security.p ? "var(--danger)" : "var(--success)";
+        let data = database[selectedCountry] || { vax: "Controllare sito Viaggiare Sicuri", travel: area === "Europa" ? "Bus/Treno" : "Aereo", dist: "Da calcolare", security: "Safe", pass: (area === "Extra-Europa") };
 
-        doss.innerHTML = `
-            <h2 style="margin:0;">📍 ${nazione}</h2>
-            <p style="color:${pColor}; font-weight:bold; border: 1px solid; padding: 5px; border-radius: 5px; text-align:center;">${pStatus}</p>
-            <p>🔌 <b>Prese:</b> ${area === 'Extra-Europa' ? 'Adattatore Universale' : 'Standard UE'}<br>
-            📱 <b>Dati:</b> ${area === 'Extra-Europa' ? 'SIM Locale / e-SIM' : 'Roaming incluso'}</p>
+        // 1. Allerta Sicurezza
+        const alertBox = document.getElementById('statusAlert');
+        alertBox.className = `status-box ${data.security === 'Danger' ? 'danger' : 'safe'}`;
+        alertBox.innerText = data.security === 'Danger' ? "⚠️ DOGANA CHIUSA O RISCHIOSA" : "✅ DOGANA APERTA";
+
+        // 2. Logistica
+        logistics.innerHTML = `
+            📍 <b>Distanza:</b> ${data.dist}<br>
+            🚢 <b>Mezzo consigliato:</b> ${data.travel}<br>
+            🛂 <b>Passaporto:</b> ${data.pass ? "Sì, obbligatorio" : "No, basta C.I."}
         `;
 
+        // 3. Vaccini
+        health.innerHTML = `<b>💉 INFO SANITARIE:</b><br>${data.vax}`;
+
+        // 4. Zaino
         const zaino = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Borraccia", "Scarponi", "Kit Medico", "Poncho"];
-        if(security.p) zaino.push("Passaporto", "Copia Documenti");
-        if(security.status === 'warn') zaino.push("Localizzatore GPS", "Numeri Emergenza Consolari");
+        if(data.pass) zaino.push("Passaporto", "Assicurazione Viaggio");
+        if(data.travel.includes("Aereo")) zaino.push("Liquidi < 100ml", "Bilancia Pesa Valigie");
 
         document.getElementById('checklistContainer').innerHTML = zaino.map((item, i) => `
             <div class="checklist-item" onclick="toggleItem(this)">
@@ -151,6 +160,13 @@
         const cb = el.querySelector('input');
         cb.checked = !cb.checked;
         el.classList.toggle('checked-item', cb.checked);
+    }
+
+    function openFlights() {
+        if(!selectedCountry) return;
+        // Reindirizza a Skyscanner con la nazione selezionata
+        const url = `https://www.skyscanner.it/trasporti/voli-da/it/${selectedCountry.toLowerCase()}/?adults=1&children=0&infants=0&cabinclass=economy&ref=home`;
+        window.open(url, '_blank');
     }
 </script>
 </body>
