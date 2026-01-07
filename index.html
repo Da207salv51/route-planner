@@ -2,124 +2,152 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Clan Robinson - Imperia 1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preparatore Route - Clan Robinson</title>
     <style>
-        :root { --green: #1b5e20; --bg: #f4f7f6; --red: #d32f2f; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 0; display: flex; justify-content: center; }
-        .app-container { width: 100%; max-width: 500px; min-height: 100vh; background: white; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
-        
-        /* Livello 1: Benvenuto */
-        #screen-welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; position: absolute; inset: 0; }
-        #screen-welcome img { width: 250px; height: auto; margin-bottom: 20px; }
-        #screen-welcome h1 { color: var(--green); font-size: 1.8em; margin-bottom: 30px; }
-        
-        /* Livello 2: Planner */
-        #screen-planner { display: none; padding: 20px; }
-        
-        .card { background: white; border: 1px solid #ddd; border-radius: 15px; padding: 20px; margin-top: 20px; }
-        .info-top { display: flex; justify-content: space-between; font-size: 0.8em; color: #666; margin-bottom: 10px; }
-        
-        label { display: block; font-weight: bold; color: var(--green); margin: 15px 0 5px; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
-        
-        button { width: 100%; padding: 15px; border-radius: 10px; border: none; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-next { background: var(--green); color: white; }
-        .btn-gen { background: #0288d1; color: white; margin-top: 10px; }
+        :root {
+            --agesci-purple: #4B2C7F;
+            --agesci-yellow: #FFC600;
+            --agesci-red: #E30613;
+        }
 
-        /* Scritta Grossa Route Invernale */
-        #winter-header { display: none; text-align: center; color: var(--red); font-size: 2.2em; font-weight: 900; margin: 20px 0; border: 4px solid var(--red); padding: 10px; border-radius: 10px; }
-        #route-summary { text-align: center; font-weight: bold; font-size: 1.2em; margin-bottom: 20px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        img {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        h1 { color: var(--agesci-purple); margin-bottom: 10px; }
+        h2 { color: var(--agesci-red); margin-top: 0; }
 
         .hidden { display: none; }
+
+        .btn {
+            background-color: var(--agesci-purple);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+
+        .btn:hover { background-color: #36205e; }
+
+        .input-group {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .result-badge {
+            background: var(--agesci-purple);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    
-    <div id="screen-welcome">
-        <img src="https://i.ibb.co/Ldx90vR/logo-agesci.png" alt="Imperia 1"> 
-        <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
-        <button class="btn-next" onclick="goNext()">AVANTI</button>
+    <div id="step1" class="container">
+        <img src="https://i.ibb.co/3mS00pS/image.png" alt="Logo AGESCI Imperia 1">
+        <h1>Benvenuti nel preparatore di Route</h1>
+        <p>Clan Robinson - Imperia 1</p>
+        <button class="btn" onclick="mostraStep2()">Avanti</button>
     </div>
 
-    <div id="screen-planner">
-        <div class="info-top">
-            <span id="live-clock"></span>
-            <span id="live-date"></span>
+    <div id="step2" class="container hidden">
+        <h2>Pianifica la Route</h2>
+        
+        <div class="input-group">
+            <label for="startDate">Data di Partenza:</label>
+            <input type="date" id="startDate">
         </div>
 
-        <div class="card">
-            <label>Data Inizio:</label>
-            <input type="date" id="start-date">
+        <div class="input-group">
+            <label for="endDate">Data di Fine:</label>
+            <input type="date" id="endDate">
+        </div>
+
+        <button class="btn" onclick="calcolaRoute()">Genera Route</button>
+
+        <div id="risultato" class="hidden">
+            <hr>
+            <h1 id="tipoRoute" style="font-size: 2.5rem; margin-bottom: 5px;"></h1>
+            <h3 id="infoGiorni"></h3>
+            <p id="periodoScelto" style="font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <script>
+        function mostraStep2() {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        }
+
+        function calcolaRoute() {
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+
+            if (isNaN(start) || isNaN(end)) {
+                alert("Per favore, inserisci entrambe le date.");
+                return;
+            }
+
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 per includere il giorno di partenza
+
+            const month = start.getMonth(); // 0 = Gennaio, 11 = Dicembre
+            const risultatoDiv = document.getElementById('risultato');
+            const tipoRoute = document.getElementById('tipoRoute');
+            const infoGiorni = document.getElementById('infoGiorni');
+            const periodoScelto = document.getElementById('periodoScelto');
+
+            // Logica periodo invernale (Dicembre, Gennaio, Febbraio)
+            if (month === 11 || month === 0 || month === 1) {
+                tipoRoute.innerText = "ROUTE INVERNALE";
+                infoGiorni.innerText = "Route di 3 gg"; // Come da tua richiesta per l'inverno
+            } else {
+                tipoRoute.innerText = "ROUTE ESTIVA";
+                infoGiorni.innerText = "Route di " + diffDays + " giorni";
+            }
+
+            periodoScelto.innerText = "Dal " + start.toLocaleDateString('it-IT') + " al " + end.toLocaleDateString('it-IT');
             
-            <label>Data Fine:</label>
-            <input type="date" id="end-date">
-
-            <label>Destinazione (Europa):</label>
-            <select id="country">
-                <option value="Italia">Italia 🇮🇹</option>
-                <option value="Francia">Francia 🇫🇷</option>
-                <option value="Spagna">Spagna 🇪🇸</option>
-                <option value="Germania">Germania 🇩🇪</option>
-                <option value="Svizzera">Svizzera 🇨🇭</option>
-                <option value="Austria">Austria 🇦🇹</option>
-            </select>
-
-            <button class="btn-gen" onclick="processRoute()">GENERA REPORT</button>
-        </div>
-
-        <div id="winter-header">ROUTE INVERNALE</div>
-        <div id="route-summary"></div>
-    </div>
-
-</div>
-
-<script>
-    // Aggiorna Orologio Live
-    function updateTime() {
-        const now = new Date();
-        document.getElementById('live-clock').innerText = now.toLocaleTimeString('it-IT');
-        document.getElementById('live-date').innerText = now.toLocaleDateString('it-IT');
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-
-    // Passaggio al livello successivo
-    function goNext() {
-        document.getElementById('screen-welcome').style.display = 'none';
-        document.getElementById('screen-planner').style.display = 'block';
-    }
-
-    // Logica Route
-    function processRoute() {
-        const start = new Date(document.getElementById('start-date').value);
-        const end = new Date(document.getElementById('end-date').value);
-        const country = document.getElementById('country').value;
-
-        if (isNaN(start) || isNaN(end)) {
-            alert("Per favore, inserisci le date.");
-            return;
+            risultatoDiv.classList.remove('hidden');
         }
-
-        const diffTime = Math.abs(end - start);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-        const winterHeader = document.getElementById('winter-header');
-        const summary = document.getElementById('route-summary');
-
-        // Se la route dura 3 giorni (o meno), mostra la scritta grossa
-        if (diffDays <= 3) {
-            winterHeader.style.display = 'block';
-            summary.innerText = `Route di ${diffDays} giorni in ${country}`;
-        } else {
-            winterHeader.style.display = 'none';
-            summary.innerText = `Route estiva di ${diffDays} giorni in ${country}`;
-        }
-    }
-</script>
-
+    </script>
 </body>
 </html>
-
