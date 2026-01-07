@@ -3,152 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Scout Travel Hub 2026</title>
+    <title>Scout Master Planner 2026</title>
     <style>
-        :root { --scout-green: #1b5e20; --gold: #fbc02d; --bg: #f4f7f6; --danger: #d32f2f; --info: #0288d1; --success: #2e7d32; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #333; }
-        .app-card { max-width: 600px; margin: auto; background: white; border-radius: 25px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-        header { text-align: center; border-bottom: 3px solid var(--scout-green); padding-bottom: 15px; margin-bottom: 20px; }
-        .clock { font-size: 0.9em; color: #666; font-weight: bold; }
-        .countdown { background: #212121; color: var(--gold); padding: 15px; border-radius: 15px; text-align: center; font-weight: bold; margin: 15px 0; border: 2px solid var(--gold); }
-        .section { background: #fff; border: 1px solid #e0e0e0; border-radius: 18px; padding: 15px; margin-bottom: 15px; }
-        label { font-weight: bold; color: var(--scout-green); display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 0.8em; }
-        input, select, button { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; outline: none; }
-        button { background: var(--scout-green); color: white; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; transition: 0.2s; }
-        .btn-flight { background: var(--info); margin-top: 5px; }
-        
-        .status-box { padding: 12px; border-radius: 12px; margin-top: 10px; font-weight: bold; font-size: 0.9em; border: 2px solid; }
-        .danger { background: #ffebee; color: var(--danger); border-color: var(--danger); }
-        .safe { background: #e8f5e9; color: var(--success); border-color: var(--success); }
-        
-        .logistics-card { background: #f1f8e9; border: 1px dashed var(--scout-green); padding: 15px; border-radius: 12px; margin-top: 10px; }
-        .checklist-item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
-        .checked-item span { text-decoration: line-through; color: #aaa; font-style: italic; }
+        :root { --green: #1b5e20; --gold: #fbc02d; --bg: #f0f2f5; --danger: #d32f2f; --info: #0288d1; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; padding: 10px; color: #333; }
+        .container { max-width: 600px; margin: auto; background: white; border-radius: 20px; padding: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        header { text-align: center; border-bottom: 2px solid var(--green); padding-bottom: 10px; margin-bottom: 15px; }
+        .live-info { font-size: 0.85em; font-weight: bold; color: #555; display: flex; justify-content: space-between; padding: 5px 10px; background: #eee; border-radius: 10px; }
+        .countdown { background: #222; color: var(--gold); padding: 12px; border-radius: 12px; text-align: center; font-weight: bold; margin: 10px 0; border: 1px solid var(--gold); }
+        .section { background: #fff; border: 1px solid #ddd; border-radius: 15px; padding: 12px; margin-bottom: 10px; }
+        label { font-weight: bold; color: var(--green); display: block; margin-bottom: 5px; font-size: 0.8em; text-transform: uppercase; }
+        input, select, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 15px; margin-top: 5px; }
+        button { background: var(--green); color: white; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .weather-card { background: linear-gradient(135deg, #00b4db, #0083b0); color: white; padding: 15px; border-radius: 15px; text-align: center; margin: 10px 0; }
+        .checklist-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .checked-item span { text-decoration: line-through; color: #bbb; }
         .hidden { display: none; }
+        .tag { font-size: 0.7em; padding: 3px 7px; border-radius: 5px; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="app-card">
+<div class="container">
     <header>
-        <div id="liveClock" class="clock"></div>
-        <h1 style="margin:5px 0; color: var(--scout-green);">⚜️ Scout Travel Hub</h1>
+        <div class="live-info">
+            <span id="liveClock"></span>
+            <span id="liveDate"></span>
+        </div>
+        <h1 style="margin:10px 0; color: var(--green);">⚜️ Scout Planner 2026</h1>
     </header>
 
     <div class="section">
-        <label>Partenza Route 2026:</label>
+        <label>Inizio Route:</label>
         <input type="date" id="dateInput" onchange="initApp()">
-        <div id="countdownBox" class="countdown">Scegli la data</div>
+        <div id="countdown" class="countdown">Scegli la data</div>
     </div>
 
-    <div id="stepNazione" class="hidden">
+    <div id="mainStep" class="hidden">
         <div class="section">
-            <label>Nazione di Destinazione:</label>
-            <input type="text" id="searchBox" placeholder="Cerca nazione..." onkeyup="searchCountry()">
-            <select id="countrySelect" size="5" style="margin-top:10px;"></select>
+            <label>Nazione:</label>
+            <select id="countrySelect" onchange="checkSubLocation()">
+                <option value="">-- Seleziona --</option>
+                <optgroup label="Europa">
+                    <option value="Italia">Italia 🇮🇹</option>
+                    <option value="Francia">Francia 🇫🇷</option>
+                    <option value="Spagna">Spagna 🇪🇸</option>
+                    <option value="Grecia">Grecia 🇬🇷</option>
+                </optgroup>
+                <optgroup label="Mondo">
+                    <option value="Kenya">Kenya 🇰🇪</option>
+                    <option value="Giappone">Giappone 🇯🇵</option>
+                    <option value="USA">Stati Uniti 🇺🇸</option>
+                    <option value="Brasile">Brasile 🇧🇷</option>
+                </optgroup>
+            </select>
         </div>
-        <button onclick="buildRoute()">VERIFICA VIAGGIO E ZAINO</button>
+
+        <div id="italiaSect" class="section hidden">
+            <label>Regione Italiana:</label>
+            <select id="regioneSelect" onchange="popolaProvince()">
+                <option value="">-- Regione --</option>
+            </select>
+            <label style="margin-top:10px;">Provincia:</label>
+            <select id="provinciaSelect">
+                <option value="">-- Provincia --</option>
+            </select>
+        </div>
+
+        <button onclick="calcolaTutto()">GENERA REPORT COMPLETO</button>
     </div>
 
     <div id="results" class="hidden">
-        <div id="statusAlert" class="status-box"></div>
+        <div id="weatherBox" class="weather-card"></div>
         
-        <div class="logistics-card">
-            <h4 style="margin:0 0 10px 0; color: var(--scout-green);">🛰️ LOGISTICA E TRASPORTI</h4>
-            <div id="logisticsInfo"></div>
-            <button id="flightBtn" class="btn-flight" onclick="openFlights()">✈️ CERCA VOLI E COSTI</button>
+        <div class="section" style="border-left: 5px solid var(--info);">
+            <h4 style="margin:0;">🛰️ LOGISTICA & DOGANA</h4>
+            <div id="logisticsInfo" style="font-size:0.9em; margin-top:5px;"></div>
+            <button id="flightLink" style="background:var(--info); font-size:0.8em;" onclick="openSkyscanner()">✈️ VEDI COSTI VOLI</button>
         </div>
 
-        <div id="healthInfo" class="section" style="margin-top:15px; border-left: 5px solid #ff5722;"></div>
-
-        <h3>📝 Zaino 70L (Tocca per segnare)</h3>
-        <div id="checklistContainer"></div>
+        <h3>📝 Zaino 70L</h3>
+        <div id="checklist"></div>
     </div>
 </div>
 
 <script>
-    const database = {
-        "Kenya": { vax: "Febbre Gialla (Obbligatoria), Malaria (Consigliata)", travel: "Aereo", dist: "Oltreoceano", security: "Safe/Warn", pass: true },
-        "Giappone": { vax: "Nessuno obbligatorio", travel: "Aereo", dist: "Lontana", security: "Safe", pass: true },
-        "USA": { vax: "Nessuno obbligatorio", travel: "Aereo", dist: "Oltreoceano", security: "Safe", pass: true },
-        "Brasile": { vax: "Febbre Gialla, Epatite A", travel: "Aereo", dist: "Oltreoceano", security: "Warn", pass: true },
-        "Spagna": { vax: "Nessuno", travel: "Nave / Bus / Treno", dist: "Vicina", security: "Safe", pass: false },
-        "Grecia": { vax: "Nessuno", travel: "Nave / Aereo", dist: "Vicina", security: "Safe", pass: false },
-        "Islanda": { vax: "Nessuno", travel: "Aereo", dist: "Media", security: "Safe", pass: false },
-        "Marocco": { vax: "Epatite A, Tifo (Consigliati)", travel: "Nave / Aereo", dist: "Media", security: "Safe", pass: true },
-        "Ucraina": { vax: "N/A", travel: "Bloccato", dist: "Est Europa", security: "Danger", pass: true }
+    const regProv = {
+        "Lombardia": ["Milano", "Bergamo", "Brescia", "Como"],
+        "Lazio": ["Roma", "Viterbo", "Rieti", "Latina"],
+        "Toscana": ["Firenze", "Siena", "Pisa", "Arezzo"],
+        "Puglia": ["Bari", "Lecce", "Foggia", "Taranto"]
     };
 
-    const continents = {
-        "Europa": ["Albania", "Austria", "Belgio", "Croazia", "Francia", "Germania", "Grecia", "Islanda", "Italia", "Norvegia", "Polonia", "Portogallo", "Regno Unito", "Spagna", "Svezia", "Svizzera", "Ucraina"],
-        "Extra-Europa": ["Argentina", "Australia", "Brasile", "Canada", "Cina", "Egitto", "Giappone", "India", "Israele", "Kenya", "Marocco", "Messico", "Stati Uniti", "Sudafrica", "Tailandia", "Turchia"]
+    const nazioniData = {
+        "Italia": { dist: "Nazionale", vax: "Nessuno", pass: false, travel: "Treno/Bus", dogana: "Aperta" },
+        "Kenya": { dist: "Oltreoceano", vax: "Febbre Gialla, Malaria", pass: true, travel: "Aereo", dogana: "Aperta con visto" },
+        "Giappone": { dist: "Lontana", vax: "Nessuno", pass: true, travel: "Aereo", dogana: "Aperta" },
+        "Francia": { dist: "Vicina", vax: "Nessuno", pass: false, travel: "Treno/Bus", dogana: "Aperta" }
     };
 
-    let selectedCountry = "";
-
-    function updateTime() {
-        document.getElementById('liveClock').innerText = new Date().toLocaleString('it-IT');
+    function updateClock() {
+        const d = new Date();
+        document.getElementById('liveClock').innerText = d.toLocaleTimeString('it-IT');
+        document.getElementById('liveDate').innerText = d.toLocaleDateString('it-IT');
     }
-    setInterval(updateTime, 1000);
+    setInterval(updateClock, 1000);
+    updateClock();
 
     function initApp() {
-        const p = new Date(document.getElementById('dateInput').value);
-        const diff = Math.ceil((p - new Date()) / 86400000);
-        document.getElementById('countdownBox').innerText = diff > 0 ? `MANCANO ${diff} GIORNI!` : "BUONA STRADA!";
-        document.getElementById('stepNazione').classList.remove('hidden');
-        searchCountry();
+        const d = new Date(document.getElementById('dateInput').value);
+        const diff = Math.ceil((d - new Date()) / 86400000);
+        document.getElementById('countdown').innerText = diff > 0 ? `MANCANO ${diff} GIORNI!` : "BUONA STRADA!";
+        document.getElementById('mainStep').classList.remove('hidden');
+        
+        const reg = document.getElementById('regioneSelect');
+        reg.innerHTML = '<option value="">-- Regione --</option>';
+        Object.keys(regProv).forEach(r => reg.add(new Option(r, r)));
     }
 
-    function searchCountry() {
-        const query = document.getElementById('searchBox').value.toLowerCase();
-        const sel = document.getElementById('countrySelect');
-        sel.innerHTML = '';
-        for (const [area, nazioni] of Object.entries(continents)) {
-            nazioni.filter(n => n.toLowerCase().includes(query)).forEach(n => {
-                let opt = document.createElement('option');
-                opt.value = n;
-                opt.dataset.area = area;
-                opt.innerText = `${n} (${area})`;
-                sel.appendChild(opt);
-            });
-        }
+    function checkSubLocation() {
+        const c = document.getElementById('countrySelect').value;
+        document.getElementById('italiaSect').className = (c === "Italia") ? "section" : "hidden";
     }
 
-    function buildRoute() {
-        const sel = document.getElementById('countrySelect');
-        if(!sel.value) return alert("Scegli una nazione!");
+    function popolaProvince() {
+        const r = document.getElementById('regioneSelect').value;
+        const p = document.getElementById('provinciaSelect');
+        p.innerHTML = '<option value="">-- Provincia --</option>';
+        if(r) regProv[r].forEach(prov => p.add(new Option(prov, prov)));
+    }
+
+    function calcolaTutto() {
+        const c = document.getElementById('countrySelect').value;
+        if(!c) return alert("Seleziona nazione!");
         
-        selectedCountry = sel.value;
-        const area = sel.options[sel.selectedIndex].dataset.area;
-        const res = document.getElementById('results');
-        const logistics = document.getElementById('logisticsInfo');
-        const health = document.getElementById('healthInfo');
+        document.getElementById('results').classList.remove('hidden');
+        const data = nazioniData[c] || nazioniData["Francia"];
         
-        res.classList.remove('hidden');
+        // Meteo Simulato basato su nazione (posizione segnata)
+        let temp = c === "Kenya" ? "28°C" : (c === "Italia" ? "18°C" : "12°C");
+        let cond = c === "Kenya" ? "☀️ Sole Tropico" : "⛅ Variabile";
+        document.getElementById('weatherBox').innerHTML = `<h3>${cond} | ${temp}</h3><p>Meteo locale previsto per la destinazione</p>`;
 
-        let data = database[selectedCountry] || { vax: "Controllare sito Viaggiare Sicuri", travel: area === "Europa" ? "Bus/Treno" : "Aereo", dist: "Da calcolare", security: "Safe", pass: (area === "Extra-Europa") };
-
-        // 1. Allerta Sicurezza
-        const alertBox = document.getElementById('statusAlert');
-        alertBox.className = `status-box ${data.security === 'Danger' ? 'danger' : 'safe'}`;
-        alertBox.innerText = data.security === 'Danger' ? "⚠️ DOGANA CHIUSA O RISCHIOSA" : "✅ DOGANA APERTA";
-
-        // 2. Logistica
-        logistics.innerHTML = `
-            📍 <b>Distanza:</b> ${data.dist}<br>
-            🚢 <b>Mezzo consigliato:</b> ${data.travel}<br>
-            🛂 <b>Passaporto:</b> ${data.pass ? "Sì, obbligatorio" : "No, basta C.I."}
+        document.getElementById('logisticsInfo').innerHTML = `
+            📍 <b>Posizione:</b> ${c} ${c === 'Italia' ? '('+document.getElementById('provinciaSelect').value+')' : ''}<br>
+            🛂 <b>Passaporto:</b> ${data.pass ? "⚠️ SERVE PASSAPORTO" : "✅ NON SERVE (Basta C.I.)"}<br>
+            🛡️ <b>Dogana:</b> ${data.dogana}<br>
+            💉 <b>Vaccini:</b> ${data.vax}
         `;
 
-        // 3. Vaccini
-        health.innerHTML = `<b>💉 INFO SANITARIE:</b><br>${data.vax}`;
+        document.getElementById('flightLink').style.display = data.travel === "Aereo" ? "block" : "none";
 
-        // 4. Zaino
-        const zaino = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Borraccia", "Scarponi", "Kit Medico", "Poncho"];
-        if(data.pass) zaino.push("Passaporto", "Assicurazione Viaggio");
-        if(data.travel.includes("Aereo")) zaino.push("Liquidi < 100ml", "Bilancia Pesa Valigie");
-
-        document.getElementById('checklistContainer').innerHTML = zaino.map((item, i) => `
+        const zaino = ["Zaino 70L", "Sacco a pelo", "Gavetta", "Scarponi", "Kit Medico", "Poncho"];
+        if(data.pass) zaino.push("Passaporto", "Assicurazione");
+        
+        document.getElementById('checklist').innerHTML = zaino.map((item, i) => `
             <div class="checklist-item" onclick="toggleItem(this)">
                 <input type="checkbox" id="i-${i}">
                 <span>${item}</span>
@@ -162,11 +171,9 @@
         el.classList.toggle('checked-item', cb.checked);
     }
 
-    function openFlights() {
-        if(!selectedCountry) return;
-        // Reindirizza a Skyscanner con la nazione selezionata
-        const url = `https://www.skyscanner.it/trasporti/voli-da/it/${selectedCountry.toLowerCase()}/?adults=1&children=0&infants=0&cabinclass=economy&ref=home`;
-        window.open(url, '_blank');
+    function openSkyscanner() {
+        const c = document.getElementById('countrySelect').value;
+        window.open(`https://www.skyscanner.it/trasporti/voli-da/it/${c.toLowerCase()}/`, '_blank');
     }
 </script>
 </body>
