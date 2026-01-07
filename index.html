@@ -5,149 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preparatore Route - Clan Robinson</title>
     <style>
-        :root {
-            --agesci-purple: #4B2C7F;
-            --agesci-yellow: #FFC600;
-            --agesci-red: #E30613;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background-color: #eef2f3; padding: 20px; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-width: 650px; margin: auto; }
+        
+        /* Stile Immagine */
+        .main-img { max-width: 100%; height: auto; border-radius: 15px; margin-bottom: 20px; border: 3px solid #2c3e50; }
+        
+        h1 { color: #2c3e50; font-size: 1.8em; }
+        .date-input { margin: 20px 0; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+        
+        /* Stile Route Invernale */
+        #risultato { display: none; margin-top: 30px; padding: 20px; border: 2px dashed #2980b9; border-radius: 10px; background-color: #ecf0f1; }
+        .titolo-grosso { font-size: 3.5em; color: #2980b9; font-weight: bold; display: block; margin: 10px 0; }
+        .dettagli { font-size: 1.4em; color: #c0392b; font-weight: bold; }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-
-        .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        img {
-            max-width: 200px;
-            margin-bottom: 20px;
-        }
-
-        h1 { color: var(--agesci-purple); margin-bottom: 10px; }
-        h2 { color: var(--agesci-red); margin-top: 0; }
-
-        .hidden { display: none; }
-
-        .btn {
-            background-color: var(--agesci-purple);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 20px;
-        }
-
-        .btn:hover { background-color: #36205e; }
-
-        .input-group {
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        .result-badge {
-            background: var(--agesci-purple);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+        button { background-color: #27ae60; color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #1e8449; transform: scale(1.05); }
     </style>
 </head>
 <body>
 
-    <div id="step1" class="container">
-        <img src="https://i.ibb.co/3mS00pS/image.png" alt="Logo AGESCI Imperia 1">
-        <h1>Benvenuti nel preparatore di Route</h1>
-        <p>Clan Robinson - Imperia 1</p>
-        <button class="btn" onclick="mostraStep2()">Avanti</button>
+<div class="container">
+    <img src="66543de8-3ef1-42c3-8552-d1ad7f06badd.jpeg" alt="Logo Clan Robinson" class="main-img">
+
+    <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
+    
+    <div id="setup">
+        <p>Scegli le date della tua route:</p>
+        <label>Inizio:</label> <input type="date" id="dataInizio" class="date-input"><br>
+        <label>Fine:</label> <input type="date" id="dataFine" class="date-input">
+        <br>
+        <button onclick="prossimoLivello()">AVANTI</button>
     </div>
 
-    <div id="step2" class="container hidden">
-        <h2>Pianifica la Route</h2>
+    <div id="risultato">
+        <p class="dettagli">Route di 3 giorni</p>
+        <span class="titolo-grosso">ROUTE INVERNALE</span>
+        <p id="dateScelte" style="font-size: 1.2em;"></p>
+    </div>
+</div>
+
+<script>
+    function prossimoLivello() {
+        const inizio = document.getElementById('dataInizio').value;
+        const fine = document.getElementById('dataFine').value;
+
+        if(!inizio || !fine) {
+            alert("Per favore, inserisci le date!");
+            return;
+        }
+
+        // Formatta le date per mostrarle
+        document.getElementById('dateScelte').innerHTML = "Dal <b>" + inizio + "</b> al <b>" + fine + "</b>";
         
-        <div class="input-group">
-            <label for="startDate">Data di Partenza:</label>
-            <input type="date" id="startDate">
-        </div>
+        // Nasconde l'input e mostra il risultato
+        document.getElementById('setup').style.display = 'none';
+        document.getElementById('risultato').style.display = 'block';
+    }
+</script>
 
-        <div class="input-group">
-            <label for="endDate">Data di Fine:</label>
-            <input type="date" id="endDate">
-        </div>
-
-        <button class="btn" onclick="calcolaRoute()">Genera Route</button>
-
-        <div id="risultato" class="hidden">
-            <hr>
-            <h1 id="tipoRoute" style="font-size: 2.5rem; margin-bottom: 5px;"></h1>
-            <h3 id="infoGiorni"></h3>
-            <p id="periodoScelto" style="font-weight: bold;"></p>
-        </div>
-    </div>
-
-    <script>
-        function mostraStep2() {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-        }
-
-        function calcolaRoute() {
-            const start = new Date(document.getElementById('startDate').value);
-            const end = new Date(document.getElementById('endDate').value);
-
-            if (isNaN(start) || isNaN(end)) {
-                alert("Per favore, inserisci entrambe le date.");
-                return;
-            }
-
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 per includere il giorno di partenza
-
-            const month = start.getMonth(); // 0 = Gennaio, 11 = Dicembre
-            const risultatoDiv = document.getElementById('risultato');
-            const tipoRoute = document.getElementById('tipoRoute');
-            const infoGiorni = document.getElementById('infoGiorni');
-            const periodoScelto = document.getElementById('periodoScelto');
-
-            // Logica periodo invernale (Dicembre, Gennaio, Febbraio)
-            if (month === 11 || month === 0 || month === 1) {
-                tipoRoute.innerText = "ROUTE INVERNALE";
-                infoGiorni.innerText = "Route di 3 gg"; // Come da tua richiesta per l'inverno
-            } else {
-                tipoRoute.innerText = "ROUTE ESTIVA";
-                infoGiorni.innerText = "Route di " + diffDays + " giorni";
-            }
-
-            periodoScelto.innerText = "Dal " + start.toLocaleDateString('it-IT') + " al " + end.toLocaleDateString('it-IT');
-            
-            risultatoDiv.classList.remove('hidden');
-        }
-    </script>
 </body>
 </html>
