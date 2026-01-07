@@ -3,131 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preparatore Route - Clan Robinson</title>
+    <title>Clan Robinson</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            text-align: center; 
-            background-color: #f8f9fa; 
-            margin: 0;
-            padding: 20px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            color: #333;
         }
-        .card { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 25px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            max-width: 400px; 
-            width: 100%;
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-        .logo-container {
-            border: 2px solid #2c3e50;
-            border-radius: 20px;
-            padding: 10px;
+        img {
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
             margin-bottom: 20px;
         }
-        .logo-container img {
-            width: 100%;
-            height: auto;
-        }
-        h1 { color: #2c3e50; font-size: 1.8em; line-height: 1.2; }
-        p { color: #555; font-size: 1.1em; }
-        
-        .input-group { margin: 20px 0; text-align: right; }
-        input { padding: 8px; border-radius: 8px; border: 1px solid #ddd; background: #f1f1f1; }
-
-        button { 
-            background-color: #27ae60; 
-            color: white; 
-            padding: 15px 60px; 
-            border: none; 
-            border-radius: 50px; 
-            font-size: 1.2em; 
-            font-weight: bold;
-            cursor: pointer; 
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 2px;
             text-transform: uppercase;
-        }
-
-        /* Schermate */
-        #pagina2 { display: none; }
-        
-        .route-info { font-size: 1.5em; color: #7f8c8d; margin-top: 20px; }
-        .titolo-invernale { 
-            font-size: 3em; 
-            font-weight: bold; 
-            color: #2980b9; 
-            margin: 10px 0; 
-            line-height: 1;
-        }
-        .date-box { 
-            background: #ecf0f1; 
-            padding: 15px; 
-            border-radius: 10px; 
-            font-size: 1.2em; 
-            color: #2c3e50;
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <div id="pagina1">
-            <div class="logo-container">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Logo_Agesci.svg/1200px-Logo_Agesci.svg.png" alt="Logo">
-                <div style="color: #4b2c85; font-weight: bold; font-size: 1.5em; margin-top: 5px;">IMPERIA 1</div>
-            </div>
-
-            <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
-            <p>Scegli le date della tua route:</p>
-            
-            <div class="input-group">
-                <label>Inizio:</label> <input type="date" id="dataInizio"><br><br>
-                <label>Fine:</label> <input type="date" id="dataFine">
-            </div>
-
-            <button onclick="vaiAllaSecondaPagina()">AVANTI</button>
-        </div>
-
-        <div id="pagina2">
-            <p class="route-info">Route di 3 gg</p>
-            <div class="titolo-invernale">ROUTE INVERNALE</div>
-            
-            <div class="date-box" id="mostra-periodo">
-                </div>
-
-            <br>
-            <button style="background-color: #95a5a6; padding: 10px 30px;" onclick="tornaIndietro()">INDIETRO</button>
-        </div>
+    <div class="container">
+        <img src="66543de8-3ef1-42c3-8552-d1ad7f06badd.jpeg" alt="Logo Clan Robinson">
+        
+        <h1>Clan Robinson</h1>
     </div>
-
-    <script>
-        function vaiAllaSecondaPagina() {
-            const inizio = document.getElementById('dataInizio').value;
-            const fine = document.getElementById('dataFine').value;
-
-            if (!inizio || !fine) {
-                alert("Per favore, seleziona entrambe le date!");
-                return;
-            }
-
-            // Trasforma le date nel formato italiano (GG/MM/AAAA)
-            const d1 = inizio.split('-').reverse().join('/');
-            const d2 = fine.split('-').reverse().join('/');
-
-            document.getElementById('mostra-periodo').innerHTML = "Dal <b>" + d1 + "</b> al <b>" + d2 + "</b>";
-
-            // Nasconde la prima pagina e mostra la seconda
-            document.getElementById('pagina1').style.display = 'none';
-            document.getElementById('pagina2').style.display = 'block';
-        }
-
-        function tornaIndietro() {
-            document.getElementById('pagina2').style.display = 'none';
-            document.getElementById('pagina1').style.display = 'block';
-        }
-    </script>
 
 </body>
 </html>
