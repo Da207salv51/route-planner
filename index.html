@@ -3,162 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preparatore Route - Clan Robinson</title>
+    <title>Spicy AI | Portrait Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            background-color: #f8f9fa;
-            padding: 40px 20px;
+            background-color: #0d0d12;
+            background-image: radial-gradient(circle at 50% -20%, #2d1b33 0%, #0d0d12 80%);
+            color: #eeeeee;
+            font-family: 'Inter', system-ui, sans-serif;
         }
-        .main-container {
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        /* Stile Logo Originale */
-        .logo-box {
-            border: 3px solid #2c3e50;
-            border-radius: 25px;
-            padding: 20px;
-            background-color: white;
-            margin-bottom: 30px;
-            display: inline-block;
+        .accent-button {
+            background: linear-gradient(135deg, #e91e63 0%, #9c27b0 100%);
+            transition: all 0.3s ease;
         }
-        .logo-img {
-            max-width: 220px;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        .group-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #4b3d8e;
-            margin-top: 15px;
-            text-transform: uppercase;
-        }
-        h1 {
-            color: #2c3e50;
-            font-size: 28px;
-            line-height: 1.2;
-            margin-bottom: 30px;
-            font-weight: 800;
-        }
-
-        /* Sezione Date (Livello 2) */
-        .config-card {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            text-align: left;
-        }
-        .date-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            color: #4b3d8e;
-            margin-bottom: 8px;
-            font-size: 13px;
-            text-transform: uppercase;
-        }
-        input[type="date"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-            box-sizing: border-box;
-        }
-        
-        /* Box Risultato Dinamico */
-        #risultato-periodo {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #eef2ff;
-            color: #2c3e50;
-            font-weight: bold;
-            text-align: center;
-            display: none; /* Appare quando si sceglie la data */
-            border: 1px dashed #4b3d8e;
-        }
-
-        .btn-next {
-            margin-top: 20px;
-            background-color: #2c3e50;
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: bold;
+        .accent-button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+            box-shadow: 0 0 20px rgba(233, 30, 99, 0.4);
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="main-container">
-        <div class="logo-box">
-            <img src="66543de8-3ef1-42c3-8552-d1ad7f06badd.jpeg" alt="AGESCI Logo" class="logo-img">
-            <div class="group-name">IMPERIA 1</div>
+    <div class="w-full max-w-xl glass-panel rounded-[2rem] overflow-hidden">
+        <div class="h-32 bg-gradient-to-r from-pink-900/40 to-purple-900/40 flex items-center justify-center border-b border-white/5">
+            <div class="text-center">
+                <h1 class="text-3xl font-black tracking-tighter uppercase italic text-white">Spicy<span class="text-pink-500">Studio</span></h1>
+                <p class="text-[10px] tracking-[0.3em] text-pink-300/60 uppercase">High-End AI Generation</p>
+            </div>
         </div>
 
-        <h1>Benvenuti nel preparatore di Route del Clan Robinson</h1>
-
-        <div class="config-card">
-            <div class="date-group">
-                <label for="start-date">Data di Inizio</label>
-                <input type="date" id="start-date" onchange="deduciPeriodo()">
+        <div class="p-8 space-y-6">
+            <div>
+                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Cosa vuoi creare?</label>
+                <textarea id="userPrompt" 
+                    class="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500/50 transition-all resize-none"
+                    placeholder="Esempio: Modella dai capelli rossi, vestito da sera nero, luci soffuse di un club..."
+                    rows="3"></textarea>
             </div>
 
-            <div class="date-group">
-                <label for="end-date">Data di Fine</label>
-                <input type="date" id="end-date">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Stile</label>
+                    <select id="stylePreset" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-gray-300 outline-none">
+                        <option value="photorealistic, highly detailed skin, 8k, fashion photography">Fotorealistico</option>
+                        <option value="glamour lighting, seductive look, high fashion, cinematic">Glamour Studio</option>
+                        <option value="artistic boudoir, soft focus, elegant atmosphere">Artistico / Soft</option>
+                        <option value="vibrant anime style, aesthetic, high quality">Anime / Stylized</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 block">Formato</label>
+                    <select id="aspectRatio" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-sm text-gray-300 outline-none">
+                        <option value="1024x1536">Verticale (2:3)</option>
+                        <option value="1024x1024">Quadrato (1:1)</option>
+                        <option value="1536x1024">Orizzontale (3:2)</option>
+                    </select>
+                </div>
             </div>
 
-            <div id="risultato-periodo"></div>
+            <button onclick="generateImage()" id="genBtn"
+                class="w-full accent-button py-4 rounded-2xl font-bold text-white uppercase tracking-widest shadow-lg">
+                Genera Immagine
+            </button>
 
-            <button class="btn-next">Continua Configurazione</button>
+            <div id="outputContainer" class="mt-4 hidden relative group">
+                <div id="spinner" class="py-20 flex flex-col items-center">
+                    <div class="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-[10px] mt-4 text-gray-500 animate-pulse">ELABORAZIONE DEI DETTAGLI...</p>
+                </div>
+                <img id="resultImage" src="" class="w-full rounded-2xl shadow-2xl border border-white/10 hidden">
+                
+                <a id="downloadLink" href="#" download="spicy_studio_ai.jpg" 
+                   class="absolute bottom-4 right-4 bg-black/70 hover:bg-pink-600 p-3 rounded-full text-white transition-colors hidden">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 
+    <footer class="mt-8 text-gray-600 text-[9px] uppercase tracking-[0.4em]">
+        End-to-End Encryption • Private Studio
+    </footer>
+
     <script>
-        function deduciPeriodo() {
-            const dataInizio = document.getElementById('start-date').value;
-            const box = document.getElementById('risultato-periodo');
+        function generateImage() {
+            const prompt = document.getElementById('userPrompt').value;
+            const style = document.getElementById('stylePreset').value;
+            const ratio = document.getElementById('aspectRatio').value;
+            const [w, h] = ratio.split('x');
             
-            if (!dataInizio) return;
-
-            const data = new Date(dataInizio);
-            const mese = data.getMonth() + 1;
-            let tipo = "";
-
-            if (mese === 12 || mese === 1) {
-                tipo = "❄️ ROUTE INVERNALE";
-            } else if (mese === 3 || mese === 4) {
-                tipo = "✝️ ROUTE PASQUALE";
-            } else if (mese >= 6 && mese <= 9) {
-                tipo = "☀️ ROUTE ESTIVA";
-            } else {
-                tipo = "📍 USCITA DI CLAN";
+            if(!prompt) {
+                alert("Inserisci una descrizione per iniziare.");
+                return;
             }
 
-            box.innerHTML = "Periodo rilevato:<br><span style='font-size: 20px; color: #4b3d8e;'>" + tipo + "</span>";
-            box.style.display = "block";
+            // Aggiorna UI
+            const container = document.getElementById('outputContainer');
+            const spinner = document.getElementById('spinner');
+            const img = document.getElementById('resultImage');
+            const dl = document.getElementById('downloadLink');
+            const btn = document.getElementById('genBtn');
+
+            container.classList.remove('hidden');
+            spinner.classList.remove('hidden');
+            img.classList.add('hidden');
+            dl.classList.add('hidden');
+            btn.disabled = true;
+            btn.innerText = "GENERAZIONE...";
+
+            // Costruzione Prompt e URL
+            const finalPrompt = `${prompt}, ${style}, masterpiece, atmospheric`;
+            const seed = Math.floor(Math.random() * 999999);
+            const url = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?width=${w}&height=${h}&seed=${seed}&nologo=true`;
+
+            // Caricamento Immagine
+            const tempImg = new Image();
+            tempImg.src = url;
+            tempImg.onload = () => {
+                img.src = url;
+                dl.href = url;
+                spinner.classList.add('hidden');
+                img.classList.remove('hidden');
+                dl.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerText = "Genera Immagine";
+            };
         }
     </script>
-
 </body>
 </html>
-
