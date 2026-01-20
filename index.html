@@ -3,130 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Studio | Vision Engine</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>AI Generator</title>
     <style>
-        body { background: #08080a; color: #f1f1f1; font-family: 'Inter', sans-serif; }
-        .glass-ui { background: rgba(15, 15, 20, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.08); }
-        .btn-glow:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); }
-        #preview-thumb { display: none; width: 80px; height: 80px; object-fit: cover; border-radius: 12px; border: 2px solid #ec4899; }
+        body { font-family: sans-serif; background: #1a1a1a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: #2a2a2a; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; }
+        textarea { width: calc(100% - 20px); padding: 10px; margin-bottom: 15px; border: 1px solid #444; border-radius: 6px; background: #333; color: #fff; resize: vertical; min-height: 80px; }
+        .btn { background: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin: 5px; transition: background 0.2s; }
+        .btn:hover { background: #0056b3; }
+        .btn-red { background: #dc3545; }
+        .btn-red:hover { background: #c82333; }
+        .input-group { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .input-group label, .input-group button { flex: 1; margin: 0 5px; }
+        #imagePreview { max-width: 100px; max-height: 100px; margin-top: 10px; border-radius: 8px; border: 2px solid #555; display: none; object-fit: cover; }
+        #loading { display: none; margin-top: 20px; font-size: 14px; color: #aaa; }
+        #outputImage { max-width: 100%; height: auto; margin-top: 20px; border-radius: 8px; border: 2px solid #555; display: none; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
+<body>
 
-    <div class="max-w-xl w-full">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-black italic tracking-tighter">SPICY<span class="text-pink-600">PRO</span></h1>
-            <p class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-2">Vision & Image Synthesis</p>
-        </header>
-
-        <div class="glass-ui rounded-[2.5rem] p-8 space-y-6 shadow-2xl">
-            <div class="space-y-4">
-                <div class="flex gap-4 items-start">
-                    <img id="preview-thumb" src="#" alt="Preview">
-                    <textarea id="prompt" 
-                        class="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder-gray-600 focus:outline-none focus:border-pink-500 transition-all resize-none"
-                        placeholder="Descrivi cosa vuoi creare o modificare..." rows="4"></textarea>
-                </div>
-                
-                <div class="flex gap-3">
-                    <label class="flex-1 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 p-4 rounded-2xl cursor-pointer transition-all">
-                        <span class="text-sm font-bold text-gray-300">📷 CARICA / FOTO</span>
-                        <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="previewImage(this)">
-                    </label>
-
-                    <button onclick="resetInputs()" class="bg-white/5 hover:bg-red-900/20 border border-white/10 px-4 rounded-2xl transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                            <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
-                            <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <button onclick="generate()" id="genBtn" class="w-full bg-gradient-to-r from-pink-600 to-purple-700 py-5 rounded-2xl font-black text-white tracking-widest btn-glow transition-all active:scale-95">
-                    GENERA VISIONE
-                </button>
-            </div>
-
-            <div id="displayArea" class="hidden pt-6 border-t border-white/5">
-                <div id="loader" class="flex flex-col items-center py-10">
-                    <div class="w-10 h-10 border-4 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-[10px] mt-4 text-gray-500 animate-pulse">ELABORAZIONE IN CORSO...</p>
-                </div>
-                <div class="relative group">
-                    <img id="outputImg" src="" class="w-full rounded-2xl shadow-2xl border border-white/10 hidden">
-                    <a id="saveBtn" href="#" download class="absolute top-4 right-4 bg-black/60 hover:bg-pink-600 p-3 rounded-full text-white transition-all hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" viewBox="0 0 16 16"><path d="M8 11.5l-5-5h10l-5 5z"/></svg>
-                    </a>
-                </div>
-            </div>
+    <div class="container">
+        <h1>AI Immagini</h1>
+        <textarea id="prompt" placeholder="Descrivi qui l'immagine che vuoi generare o modificare..."></textarea>
+        
+        <div class="input-group">
+            <label class="btn">
+                Carica Immagine
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewFile(this)">
+            </label>
+            <button class="btn btn-red" onclick="clearImage()">Rimuovi Immagine</button>
         </div>
-        <p class="text-center text-gray-700 text-[9px] mt-6 tracking-widest uppercase italic">Basato su Neural Engine v.26</p>
+        
+        <img id="imagePreview" src="#" alt="Anteprima Immagine">
+
+        <button class="btn" onclick="generateImage()">Genera Immagine</button>
+
+        <div id="loading">Generazione in corso...</div>
+        <img id="outputImage" src="#" alt="Immagine Generata">
     </div>
 
     <script>
-        let baseImage = null;
+        let uploadedImageUrl = null; // Per tenere traccia dell'URL dell'immagine caricata
 
-        function previewImage(input) {
+        function previewFile(input) {
+            const preview = document.getElementById('imagePreview');
             const file = input.files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = function() {
+                preview.src = reader.result;
+                preview.style.display = 'block';
+                uploadedImageUrl = reader.result; // Salva l'URL base64 dell'immagine
+            }
+
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    baseImage = e.target.result;
-                    const thumb = document.getElementById('preview-thumb');
-                    thumb.src = e.target.result;
-                    thumb.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(file); // Legge il file come URL base64
+            } else {
+                clearImage();
             }
         }
 
-        function resetInputs() {
-            document.getElementById('prompt').value = '';
+        function clearImage() {
             document.getElementById('imageInput').value = '';
-            document.getElementById('preview-thumb').style.display = 'none';
-            baseImage = null;
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('imagePreview').src = '#';
+            uploadedImageUrl = null;
         }
 
-        async function generate() {
-            const promptStr = document.getElementById('prompt').value;
-            const genBtn = document.getElementById('genBtn');
-            const displayArea = document.getElementById('displayArea');
-            const loader = document.getElementById('loader');
-            const outputImg = document.getElementById('outputImg');
-            const saveBtn = document.getElementById('saveBtn');
+        async function generateImage() {
+            const promptText = document.getElementById('prompt').value;
+            const loadingDiv = document.getElementById('loading');
+            const outputImage = document.getElementById('outputImage');
 
-            if(!promptStr && !baseImage) return alert("Inserisci un testo o carica un'immagine!");
-
-            // UI feedback
-            genBtn.disabled = true;
-            genBtn.innerText = "ELABORAZIONE...";
-            displayArea.classList.remove('hidden');
-            loader.classList.remove('hidden');
-            outputImg.classList.add('hidden');
-            saveBtn.classList.add('hidden');
-
-            const seed = Math.floor(Math.random() * 999999);
-            
-            // Logica: Se c'è un'immagine, la aggiungiamo al prompt come riferimento visivo
-            // Nota: Il modello Pollinations accetta link. Per simulare Image-to-Image usiamo il seed e il prompt descrittivo.
-            let finalPrompt = promptStr;
-            if(baseImage) {
-                finalPrompt = "In style of uploaded image, " + promptStr + ", high quality, detailed";
+            if (!promptText && !uploadedImageUrl) {
+                alert("Per favore, inserisci un testo o carica un'immagine.");
+                return;
             }
 
-            const url = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?width=1024&height=1536&seed=${seed}&nologo=true`;
+            loadingDiv.style.display = 'block';
+            outputImage.style.display = 'none'; // Nascondi immagine precedente
 
-            const imgLoader = new Image();
-            imgLoader.src = url;
-            imgLoader.onload = () => {
-                outputImg.src = url;
-                document.getElementById('saveBtn').href = url;
-                loader.classList.add('hidden');
-                outputImg.classList.remove('hidden');
-                saveBtn.classList.remove('hidden');
-                genBtn.disabled = false;
-                genBtn.innerText = "GENERA VISIONE";
+            let finalPrompt = promptText;
+            
+            // Se c'è un'immagine caricata, la aggiungiamo alla richiesta
+            // Nota: Pollinations non accetta direttamente immagini via Base64.
+            // Per simulare l'effetto "Image-to-Image", aggiungiamo descrittori al prompt.
+            if (uploadedImageUrl) {
+                finalPrompt = `in the style of an image, ${promptText || 'enhance this image'}, high quality, detailed`;
+            }
+
+            const seed = Math.floor(Math.random() * 1000000); // Sceglie un seed casuale
+            // Risoluzione più bassa per una generazione più veloce
+            const imageUrl = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?width=512&height=768&seed=${seed}&nologo=true&model=flux`;
+
+            const imgElement = new Image();
+            imgElement.src = imageUrl;
+
+            imgElement.onload = () => {
+                loadingDiv.style.display = 'none';
+                outputImage.src = imageUrl;
+                outputImage.style.display = 'block';
+            };
+
+            imgElement.onerror = () => {
+                loadingDiv.style.display = 'none';
+                alert("Errore nella generazione dell'immagine. Riprova.");
             };
         }
     </script>
